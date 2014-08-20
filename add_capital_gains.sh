@@ -1,4 +1,10 @@
 #!/bin/bash
+####################################################
+# Project : https://github.com/ohingardail/linux-cronscript
+# Author  : Adam Harrington
+# Date    : 20 August 2014
+# Licence : none (free for general use)
+####################################################
 
 # load parmfiles if exist
 if [ -d ../parms ]
