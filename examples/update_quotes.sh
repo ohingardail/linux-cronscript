@@ -61,12 +61,13 @@ do
 		QUOTE=`/usr/bin/gnc-fq-dump currency ${SYMBOL} ${DEFAULT_CURRENCY}`
 		DATE=`date +"%m/%d/%Y"`
 		PRICE=`echo "${QUOTE}" | cut -d' ' -f4`
+		CURRENCY=${DEFAULT_CURRENCY}
 	fi
 
 	# echo	"call post_commodity_price('${SYMBOL}', '${DATE}', '${CURRENCY}', '${PRICE}', 'Finance::Quote');"
 
 	mysql -s --user=${GNUCASH_USERNAME} --password=${GNUCASH_PASSWORD} --database=${CUSTOM_GNUCASH_DATABASE} <<-EOF
-		call post_commodity_price('${SYMBOL}', '${DATE}', '${DEFAULT_CURRENCY}', ${PRICE}, 'Finance::Quote');
+		call post_commodity_price('${SYMBOL}', '${DATE}', '${CURRENCY}', ${PRICE}, 'Finance::Quote');
 	EOF
 
 done
