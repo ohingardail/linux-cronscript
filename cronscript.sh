@@ -2,7 +2,7 @@
 ####################################################
 # Project : https://github.com/ohingardail/linux-cronscript
 # Author  : Adam Harrington
-# Date    : 20 May 2015
+# Date    : 13 July 2015
 # Licence : none (free for general use)
 ####################################################
 
@@ -205,7 +205,7 @@ fi
 
 cd ${HOME}/cron/
 
-for FOLDER in parms temp mail once ${MODE}
+for FOLDER in parms temp mail once prepared ${MODE}
 do
 	if [ ! -d ${FOLDER} -a ! -f ${FOLDER} ]
 	then 
@@ -231,10 +231,15 @@ done
 # install inbound custom instructions, if any
 if [ "${USER}" != "root" -a -d "${NOTIFICATION_IN_FOLDER}" ]
 then
-	for EXECFILE in `${FIND} ${NOTIFICATION_IN_FOLDER} -type f -user ${USER} -name "do*" | ${EGREP} -v "(${ME}|~)" | ${SORT}`
+	for NOTIFICATION_FILE in `${FIND} ${NOTIFICATION_IN_FOLDER} -type f -user ${USER} -name "do*" | ${EGREP} -v "(${ME}|~)" | ${SORT}`
 	do 
-		${CHMOD} 744 ${EXECFILE}
-		mv ${EXECFILE} once
+		EXECFILE=`${BASENAME} ${NOTIFICATION_FILE}`
+		if [ -O prepared/${EXECFILE} ]
+		then
+			${CP} prepared/${EXECFILE} once/${EXECFILE}
+			${CHMOD} 744 once/${EXECFILE}
+			${RM} ${NOTIFICATION_FILE}
+		fi
 	done
 fi
 
@@ -249,7 +254,7 @@ fi
 
 # cycle through files to run
 ITERATION=0
-if [ "${MODE}" != "" -a "${MODE}" != "mail" ]
+if [ "${MODE}" != "" -a `echo "${MODE}" | egrep -c '^(parms|mail|prepepared|temp)$'` -eq 0 ]
 then
 	
 	for EXECFILE in `${FIND} ${MODE} -type f -executable -user ${USER} | ${EGREP} -v "(${ME}|~|\.done$)" | ${SORT}`
